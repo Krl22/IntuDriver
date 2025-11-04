@@ -76,9 +76,7 @@ function MapView({ center = [-74.08175, 4.60971], zoom = 12, onStop, fullScreen 
                 if (onLocationReady && !readyNotifiedRef.current) {
                   try {
                     onLocationReady({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-                  } catch (err) {
-                    console.debug("onLocationReady lanzó excepción (initial)", err);
-                  }
+                  } catch { void 0; }
                   readyNotifiedRef.current = true;
                 }
               };
@@ -155,9 +153,7 @@ function MapView({ center = [-74.08175, 4.60971], zoom = 12, onStop, fullScreen 
             if (onLocationReady && !readyNotifiedRef.current) {
               try {
                 onLocationReady({ lat, lng: lon });
-              } catch (err) {
-                console.debug("onLocationReady lanzó excepción (geolocate)", err);
-              }
+              } catch { void 0; }
               readyNotifiedRef.current = true;
             }
           } catch (err) {

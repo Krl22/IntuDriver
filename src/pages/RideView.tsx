@@ -122,7 +122,9 @@ const RideView: React.FC = () => {
                 { lat: targetLat, lng: targetLng },
                 token!
               );
-              const source = map!.getSource("ride-route") as mapboxgl.GeoJSONSource | undefined;
+              const source = map!.getSource("ride-route") as
+                | mapboxgl.GeoJSONSource
+                | undefined;
               if (source) {
                 source.setData({
                   type: "Feature",

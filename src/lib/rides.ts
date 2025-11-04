@@ -10,7 +10,11 @@ import {
   update,
   get,
 } from "firebase/database";
-import { doc, setDoc, serverTimestamp as fsServerTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  serverTimestamp as fsServerTimestamp,
+} from "firebase/firestore";
 
 export type RideRequest = {
   riderId: string;
@@ -32,7 +36,11 @@ export type RideItem = { id: string; data: RideRequest };
 export function listenSearchingRides(
   cb: (rides: RideItem[]) => void
 ): () => void {
-  const q = query(ref(db, "rides/requests"), orderByChild("status"), equalTo("searching"));
+  const q = query(
+    ref(db, "rides/requests"),
+    orderByChild("status"),
+    equalTo("searching")
+  );
   return onValue(q, (snap) => {
     const list: RideItem[] = [];
     snap.forEach((child) => {
@@ -66,7 +74,11 @@ export async function acceptRide(
       driver: driver,
     };
   });
-  return result.committed === true && !!result.snapshot.val() && result.snapshot.val().status === "accepted";
+  return (
+    result.committed === true &&
+    !!result.snapshot.val() &&
+    result.snapshot.val().status === "accepted"
+  );
 }
 
 export function subscribeRide(
@@ -88,18 +100,29 @@ export async function updateDriverLocation(
   });
 }
 
-export async function startRide(requestId: string, code: string): Promise<boolean> {
+export async function startRide(
+  requestId: string,
+  code: string
+): Promise<boolean> {
   const r = ref(db, `rides/requests/${requestId}`);
   const result = await runTransaction(r, (current) => {
     if (!current) return current;
     if (current.status !== "accepted") return current;
     const pickupCode = String(current.pickupCode ?? "");
     if (pickupCode && pickupCode === String(code).trim()) {
-      return { ...current, status: "in_progress", startedAt: serverTimestamp() };
+      return {
+        ...current,
+        status: "in_progress",
+        startedAt: serverTimestamp(),
+      };
     }
     return current;
   });
-  return result.committed === true && !!result.snapshot.val() && result.snapshot.val().status === "in_progress";
+  return (
+    result.committed === true &&
+    !!result.snapshot.val() &&
+    result.snapshot.val().status === "in_progress"
+  );
 }
 
 export async function completeRide(requestId: string) {
@@ -110,9 +133,14 @@ export async function completeRide(requestId: string) {
     const data = snap.val() as RideRequest | null;
     if (data) {
       const rideDoc = doc(firestore, "rides", requestId);
-      const createdAt = typeof data.createdAt === "number" ? new Date(data.createdAt) : fsServerTimestamp();
-      const acceptedAt = typeof data.acceptedAt === "number" ? new Date(data.acceptedAt) : null;
-      const startedAt = typeof data.startedAt === "number" ? new Date(data.startedAt) : null;
+      const createdAt =
+        typeof data.createdAt === "number"
+          ? new Date(data.createdAt)
+          : fsServerTimestamp();
+      const acceptedAt =
+        typeof data.acceptedAt === "number" ? new Date(data.acceptedAt) : null;
+      const startedAt =
+        typeof data.startedAt === "number" ? new Date(data.startedAt) : null;
       await setDoc(
         rideDoc,
         {

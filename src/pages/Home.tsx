@@ -5,8 +5,6 @@ import MapView from "@/components/MapView";
 import { listenSearchingRides, type RideItem, acceptRide } from "@/lib/rides";
 import { useAuth } from "@/context/useAuth";
 import { useNavigate } from "react-router-dom";
-import { firestore } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
 
 function Home() {
   const [searching, setSearching] = React.useState<boolean>(false);
@@ -15,31 +13,6 @@ function Home() {
   const [hasLocation, setHasLocation] = React.useState<boolean>(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [isProfileComplete, setIsProfileComplete] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    const checkProfile = async () => {
-      if (!user) {
-        setIsProfileComplete(false);
-        return;
-      }
-      try {
-        const snap = await getDoc(doc(firestore, "users", user.uid));
-        const data = (snap.data() || {}) as {
-          firstName?: string;
-          lastName?: string;
-          birthdate?: string;
-          profilePhotoUrl?: string;
-          carPhotoUrl?: string;
-        };
-        const ok = !!(data.firstName && data.lastName && data.birthdate && data.profilePhotoUrl && data.carPhotoUrl);
-        setIsProfileComplete(ok);
-      } catch {
-        setIsProfileComplete(false);
-      }
-    };
-    checkProfile();
-  }, [user]);
 
   React.useEffect(() => {
     if (!searching || !hasLocation) return;
@@ -108,11 +81,6 @@ function Home() {
 
   const handleAccept = async (id: string) => {
     if (!user) return;
-    if (!isProfileComplete) {
-      alert("Completa tu cuenta en Cuenta antes de aceptar viajes.");
-      navigate("/account");
-      return;
-    }
     const ok = await acceptRide(id, {
       id: user.uid,
       phone: user.phoneNumber ?? null,
@@ -130,23 +98,10 @@ function Home() {
       <p className="text-green-700 text-sm">
         Pulsa el botón para comenzar a buscar viajes de clientes cerca.
       </p>
-      {!isProfileComplete && (
-        <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 text-amber-800 text-xs p-2">
-          Completa tu perfil (nombre, apellido, fecha, foto y foto del auto) para poder buscar clientes.
-        </div>
-      )}
       {!searching ? (
         <Button
           className="w-full py-4 bg-green-700 hover:bg-green-800 text-white"
-          onClick={() => {
-            if (!isProfileComplete) {
-              navigate("/account");
-              alert("Completa tu cuenta antes de iniciar la búsqueda.");
-              return;
-            }
-            setSearching(true);
-          }}
-          disabled={!user || !isProfileComplete}
+          onClick={() => setSearching(true)}
         >
           <Radar className="size-5" />
           Iniciar búsqueda de viajes

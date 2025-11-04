@@ -43,7 +43,12 @@ export function lineBounds(line: GeoJSON.LineString) {
         Math.max(acc[3], lat),
       ];
     },
-    [Infinity, Infinity, -Infinity, -Infinity] as [number, number, number, number]
+    [Infinity, Infinity, -Infinity, -Infinity] as [
+      number,
+      number,
+      number,
+      number
+    ]
   );
   return { minLng, minLat, maxLng, maxLat };
 }

@@ -13,7 +13,11 @@ function Layout() {
   const { pathname } = useLocation();
   const isRideView = pathname.startsWith("/ride/");
   return (
-    <div className={`min-h-screen bg-amber-50 flex flex-col ${isRideView ? "pb-0" : "pb-20"}`}>
+    <div
+      className={`min-h-screen bg-amber-50 flex flex-col ${
+        isRideView ? "pb-0" : "pb-20"
+      }`}
+    >
       {!isRideView && (
         <div className="p-4 border-b border-amber-100 bg-amber-50">
           <h1 className="text-2xl font-bold text-green-800">Intu Driver</h1>
